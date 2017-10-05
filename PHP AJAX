@@ -1,0 +1,132 @@
+//CONFIG PAGE//
+
+<?php
+
+$con = mysqli_connect('localhost','root','','register');
+//mysqli_select_db($con,);
+
+
+?>
+
+//ajaxReg.php//
+<?php
+include  'config.php';
+session_start();
+
+
+
+?>
+
+<html>
+	<title>Register Page
+		</title>
+		<head>
+		<script src="jquery-3.2.1.min.js"></script>
+		</head>
+	<body>
+	<span style="color:red"><?php if( isset($_SESSION["succ"])){ echo $_SESSION['succ']; 
+    session_unset($_SESSION["succ"]);
+	}?></span>
+		<form id='regForm'>
+		
+			<label>Firstname</label>
+			<input type='text' name='fname' id='fname' /></br></br>
+			<label>Lastname</label>
+			<input type='text' name='lname' id='lname' /></br></br>
+			<label>Email</label>
+			  <input type='email' name='email' id='email' /></br></br>
+			<label>Password</label>
+			<input type='password' name='password' id='password' /></br></br>
+			
+			<input type='submit'  id='submit'  value='Submit'/>
+		</form>
+
+	</body>
+	<script>
+    
+    </script>
+	<script type="text/javascript">
+$(function(){
+    $("#submit").click(function(){
+		alert
+        var password = $("#password").val();
+    var fname = $("#fname").val();
+    var lname = $("#lname").val();
+    var email = $("#email").val();
+    $.ajax({
+        url: "regExe.php",
+        type: "POST",
+        async: true,
+        data:   {
+                   // buttonsave: 1,
+                    password: password,
+                    fname: fname,
+                    lname: lname,
+                    email: email
+                },
+        success: function(result){
+            alert("OK! Good!");
+			 window.location.href = 'ajaxReg.php';
+        }
+    });
+    });
+});
+</script>
+
+</html>
+<script>
+// $( document ).ready(function() {
+	// $("#submit").click(function(){;
+			// $.ajax({
+		  // type: "post",
+		  // url: "regExe.php",
+		  // data: form.serialize,
+		  // cache: false,
+		  // success: function(data){
+			 // alert(data);
+		  // }
+		// });
+	// });
+// });
+
+
+
+</script>
+
+//regExe.php//
+
+<?php
+
+include 'config.php';
+session_start();
+
+ extract($_POST);
+//echo $fname;die;
+ $avail = "select * from reg where fname='".$fname."'";
+ //echo $avail;die;
+ $res = mysqli_query($con, $avail);
+ $result = mysqli_fetch_array($res) ;
+ 
+// $res = mysqli_fetch_row($avail);
+ 
+ if(!$res ){
+	 
+    $_SESSION["succ"]="User Name Already Exit";
+ }else
+ {
+	 $store_value = "insert into reg (fname,lname,email,password) values('".$fname."','".$lname."','".$email."','".$password."')";
+	 //echo $store_value;
+	  $s = mysqli_query($con, $store_value);
+		$last_id = mysqli_insert_id($con);
+	 // echo $last_id;die;
+	 if($store_value)
+	 {
+		 $_SESSION['succ'] = 'Registered Successfully';
+		 header('Location: register.php');
+	}else{
+	 $_SESSION['succ'] = 'Unable To Register,Try Again';
+	  header('Location: register.php');
+	}
+ }
+?>
+//all code done //
